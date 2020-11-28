@@ -1,0 +1,17 @@
+{
+  "name": "cwe-helper",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alejandro Saenz",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "fast-xml-parser": "^3.17.4",
+    "unzipper": "^0.10.11",
+    "xml2json": "^0.12.0"
+  }
+}
