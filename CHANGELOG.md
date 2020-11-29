@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2-alpha.1](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.2-alpha.0...v0.0.2-alpha.1) (2020-11-29)
+
+
+### Docs
+
+* **package.json readme.md:** update README to include example. Add git cz ([88222d2](https://github.com/Whamo12/fetch-cwe-list/commit/88222d2cc5b16b8a1907968c56ca5ac7e8d9e427))
+
 ### [0.0.2-alpha.0](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.2-0...v0.0.2-alpha.0) (2020-11-29)
 
 ### [0.0.2-0](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.1...v0.0.2-0) (2020-11-29)
