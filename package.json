@@ -1,17 +1,57 @@
 {
-  "name": "cwe-helper",
-  "version": "0.0.0",
-  "description": "",
+  "name": "fetch-cwe-list",
+  "version": "0.0.1-alpha.0",
+  "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version"
   },
-  "author": "Alejandro Saenz",
+  "author": {
+    "name": "Alejandro Saenz",
+    "email": "alejandrosaenz117@gmail.com",
+    "url": "https://www.alejandrosaenz.com"
+  },
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.0",
-    "fast-xml-parser": "^3.17.4",
     "unzipper": "^0.10.11",
     "xml2json": "^0.12.0"
-  }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "husky": "^4.3.0",
+    "standard-version": "^9.0.0"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Whamo12/cwe-list.git"
+  },
+  "homepage": "https://github.com/Whamo12/cwe-list.git",
+  "keywords": [
+    "web security",
+    "web application security",
+    "webappsec",
+    "owasp",
+    "security",
+    "cwe",
+    "common weakness enumeration"
+  ]
 }
