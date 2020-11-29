@@ -1,11 +1,11 @@
 {
   "name": "fetch-cwe-list",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1",
   "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "standard-version"
+    "release": "standard-version -- --prerelease alpha"
   },
   "author": {
     "name": "Alejandro Saenz",
@@ -42,9 +42,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Whamo12/cwe-list.git"
+    "url": "https://github.com/Whamo12/fetch-cwe-list"
   },
-  "homepage": "https://github.com/Whamo12/cwe-list.git",
+  "homepage": "https://github.com/Whamo12/fetch-cwe-list",
   "keywords": [
     "web security",
     "web application security",
