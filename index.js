@@ -1,48 +1,72 @@
-const parser = require('fast-xml-parser');
-const axios = require('axios').default;
-const unzipper = require('unzipper');
-const fs = require('fs');
-const { parse } = require('path');
-var parser2 = require('xml2json');
-
-var options = {
+const axios = require('axios').default
+const unzipper = require('unzipper')
+const fs = require('fs')
+const parser = require('xml2json')
+const path = require('path')
+const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
+const xmlFileName = path.join(__dirname, 'output', 'cwec_v4.2.xml')
+const filePath = path.join(__dirname, 'output')
+let externalReferenceAry = []
+const options = {
   object: false,
   reversible: false,
   coerce: false,
   sanitize: true,
   trim: true,
-  arrayNotation: true,
+  arrayNotation: false,
   alternateTextNode: false
-};
+}
 
-xmlParse = () => {
-  fs.readFile('./output/path/cwec_v4.2.xml', function (err, data) {
-    //optional (it'll return an object in case it's not valid)
-    console.log(data);
-    var json = parser2.toJson(data);
-    let x = JSON.parse(json, options);
-    console.log(x.Weakness_Catalog.Weaknesses);
-    //var jsonObj = parser.parse(data);
-  });
-};
+const fetchCwecLatest = () => {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    try {
+      const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
+        responseType: 'arraybuffer'
+      })
 
-getUser = async () => {
-  try {
-    const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
-      responseType: 'arraybuffer'
-    });
-    fs.writeFile('test.zip', response.data, async (err) => {
-      if (err) {
-        return console.log(err);
-      }
-      console.log('The file was saved!');
-      let path = 'output/path';
-      fs.createReadStream('test.zip').pipe(unzipper.Extract({ path }));
-    });
-  } catch (error) {
-    console.error(error);
+      fs.writeFile(zipFileName, response.data, async () => {
+        const readStream = fs.createReadStream(zipFileName).pipe(unzipper.Extract({ path: filePath }))
+        await new Promise((resolve) => readStream.on('close', resolve))
+        fs.readFile(`${xmlFileName}`, (err, data) => {
+          if (err) {
+            console.error(err)
+          }
+          const cweJson = parser.toJson(data)
+          const cweParsed = JSON.parse(cweJson, options)
+          const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
+          externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
+          resolve(cweWeaknessAry)
+        })
+      })
+    } catch (error) {
+      console.error(error)
+      reject(error)
+    }
+  })
+}
+
+const getExternalReferencesByCwe = (cwe) => {
+  if (Array.isArray(cwe.References.Reference)) {
+    cwe.References.Full_Details = []
+    for (const externalReferenceId of cwe.References.Reference) {
+      const fullReferenceDetails = externalReferenceAry.find(
+        (reference) => externalReferenceId.External_Reference_ID === reference.Reference_ID
+      )
+      cwe.References.Full_Details.push(fullReferenceDetails)
+    }
   }
-};
+}
 
-//getUser();
-xmlParse();
+// TODO add optional parameters for deleting items and where to store them
+const fetchCweList = async () => {
+  const cweWeaknessAry = await fetchCwecLatest()
+  for (const cwe of cweWeaknessAry) {
+    if (cwe.References) getExternalReferencesByCwe(cwe)
+  }
+  fs.unlinkSync(zipFileName)
+  fs.unlinkSync(`${xmlFileName}`)
+  return cweWeaknessAry
+}
+
+module.exports = fetchCweList
