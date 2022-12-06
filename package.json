@@ -1,6 +1,6 @@
 {
   "name": "fetch-cwe-list",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "scripts": {
