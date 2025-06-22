@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.4...v0.0.5) (2025-06-22)
+
+
+### Bug Fixes
+
+* migrate from xml2json to fast-xml-parser ([d692369](https://github.com/Whamo12/fetch-cwe-list/commit/d692369c4fa9cee15fee1f308f5accad2562930b))
+
 ### [0.0.4](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.3...v0.0.4) (2025-06-22)
 
 
