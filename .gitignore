@@ -46,7 +46,8 @@ testem.log
 /typings
 .env
 .env.*
-output/path
+output/*
+!output/.gitkeep
 
 # System Files
 .DS_Store
