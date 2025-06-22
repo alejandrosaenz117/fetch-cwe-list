@@ -1,18 +1,15 @@
 const axios = require('axios').default
 const unzipper = require('unzipper')
 const fs = require('fs')
-const parser = require('xml2json')
+const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
 let externalReferenceAry = []
 const options = {
-  object: false,
-  reversible: false,
-  coerce: false,
-  sanitize: true,
-  trim: true,
-  arrayNotation: false,
-  alternateTextNode: false
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  trimValues: true,
+  parseAttributeValue: true
 }
 
 // Download the CWE zip file and save it locally
@@ -44,15 +41,15 @@ async function extractXmlBuffersFromZip (zipPath) {
   return xmlBuffers
 }
 
-// Parse XML buffer to JSON using xml2json
+// Parse XML buffer to JSON using fast-xml-parser
 function parseXmlBufferToJson (xmlBuffer, options) {
   const xmlPreview = xmlBuffer.toString('utf8', 0, 200)
   console.log('XML file preview:', xmlPreview)
   if (!xmlPreview.trim().startsWith('<?xml')) {
     throw new Error('Extracted file does not appear to be valid XML.')
   }
-  const cweJson = parser.toJson(xmlBuffer)
-  return JSON.parse(cweJson, options)
+  const parser = new XMLParser(options)
+  return parser.parse(xmlBuffer.toString('utf8'))
 }
 
 // Clean up temporary files
