@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.3...v0.0.4) (2025-06-22)
+
+
+### Features
+
+* refactored codebase with copilot.  Fixed vulnerabilities ([0f1f05d](https://github.com/Whamo12/fetch-cwe-list/commit/0f1f05dd6e310e02d530c11bb553d0a9f738a3cd))
+
+
+### Others
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([8f049b6](https://github.com/Whamo12/fetch-cwe-list/commit/8f049b6011436fae84afd2993cee97692b7d628a))
+
 ### [0.0.3](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.2...v0.0.3) (2022-12-06)
 
 
