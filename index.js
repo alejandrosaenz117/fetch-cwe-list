@@ -32,13 +32,16 @@ async function downloadCweZip (url, destPath) {
       })
     })
     request.on('error', (err) => {
-      file.close()
-      fs.unlink(destPath, () => {})
-      reject(err)
+      handleFileError(file, destPath, reject, err)
     })
   })
 }
 
+function handleFileError(file, destPath, reject, error) {
+  file.close()
+  fs.unlink(destPath, () => {})
+  reject(error)
+}
 // Extract all XML files from the zip and return their buffers
 async function extractXmlBuffersFromZip (zipPath) {
   const xmlBuffers = []
