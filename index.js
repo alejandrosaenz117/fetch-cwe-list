@@ -1,4 +1,4 @@
-const axios = require('axios').default
+const https = require('https')
 const unzipper = require('unzipper')
 const fs = require('fs')
 const { XMLParser } = require('fast-xml-parser')
@@ -13,15 +13,30 @@ const options = {
 
 // Download the CWE zip file and save it locally
 async function downloadCweZip (url, destPath) {
-  try {
-    const response = await axios.get(url, { responseType: 'arraybuffer' })
-    await fs.promises.writeFile(destPath, response.data)
-  } catch (err) {
-    if (err.response && err.response.status === 404) {
-      throw new Error(`CWE version not found at ${url} (status: 404)`)
-    }
-    throw err
-  }
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(destPath)
+    const request = https.get(url, (response) => {
+      if (response.statusCode === 404) {
+        file.close()
+        fs.unlink(destPath, () => {})
+        return reject(new Error(`CWE version not found at ${url} (status: 404)`))
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        file.close()
+        fs.unlink(destPath, () => {})
+        return reject(new Error(`Failed to download file: ${url} (status: ${response.statusCode})`))
+      }
+      response.pipe(file)
+      file.on('finish', () => {
+        file.close(resolve)
+      })
+    })
+    request.on('error', (err) => {
+      file.close()
+      fs.unlink(destPath, () => {})
+      reject(err)
+    })
+  })
 }
 
 // Extract all XML files from the zip and return their buffers
