@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.5...v0.0.6) (2025-06-23)
+
+
+### Features
+
+* **index.js:** add support for fetching and parsing any specific CWE version from the MITRE archive ([cf21cdb](https://github.com/Whamo12/fetch-cwe-list/commit/cf21cdbf792d1ee07e83f537769246077b65bbc5))
+
 ### [0.0.5](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.4...v0.0.5) (2025-06-22)
 
 
