@@ -1,6 +1,6 @@
 # fetch-cwe-list
 
-A simple Node.js module that fetches, extracts, and parses the latest Common Weakness Enumeration (CWE) list from MITRE, returning it as a convenient JavaScript array of objects. This package handles downloading, unzipping, and parsing the official CWE XML data for you.
+A simple Node.js module that fetches, extracts, and parses the latest **or a specific version** of the Common Weakness Enumeration (CWE) list from MITRE, returning it as a convenient JavaScript array of objects. This package handles downloading, unzipping, and parsing the official CWE XML data for you.
 
 ## Install
 
@@ -13,17 +13,23 @@ npm install fetch-cwe-list
 ```
 const fetchCweList = require('fetch-cwe-list')
 
+// Fetch the latest CWE list (default)
+const cweAry = await fetchCweList()
+
+// Fetch a specific CWE version (e.g., 4.16)
+const cweAry416 = await fetchCweList('4.16')
+
 // Promise usage
-fetchCweList().then((cweAry) => {
+fetchCweList('4.16').then((cweAry) => {
   console.log(cweAry)
 })
-
-// async/await usage
-const cweAry = await fetchCweList();
 ```
 
-- The result is an array of CWE objects, each representing a weakness entry from the latest MITRE CWE catalog.
+- The result is an array of CWE objects, each representing a weakness entry from the specified MITRE CWE catalog version.
 - All network, extraction, and parsing steps are handled automatically.
+- If no version is provided, the latest available CWE list is fetched.
+- **Version strings must match the MITRE format (e.g., `4.17`, `4.16`, `4.15`, ...).**
+- **See the [CWE Release Archive](https://cwe.mitre.org/data/archive.html) for all available version strings.**
 
 ## Example Output
 
