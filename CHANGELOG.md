@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.6...v0.0.7) (2025-06-24)
+
+
+### Bug Fixes
+
+* **package.json:** remove dependency on Axios ([954acc9](https://github.com/Whamo12/fetch-cwe-list/commit/954acc94220e029acf58a1c74e7610c78397852d)), closes [#6](https://github.com/Whamo12/fetch-cwe-list/issues/6)
+
+
+### Others
+
+* **deps:** bump axios from 0.21.4 to 0.30.0 ([ba8f9b5](https://github.com/Whamo12/fetch-cwe-list/commit/ba8f9b5a248f93d7d68a38a0c0ffe9cd18b1ea57))
+
 ### [0.0.6](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.5...v0.0.6) (2025-06-23)
 
 
