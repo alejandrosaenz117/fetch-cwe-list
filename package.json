@@ -15,7 +15,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.0",
     "fast-xml-parser": "^5.2.5",
     "unzipper": "^0.10.11"
   },
