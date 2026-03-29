@@ -147,6 +147,16 @@ const fetchCweList = async (version) => {
 }
 
 module.exports = fetchCweList
+module.exports.downloadCweZip = downloadCweZip
+module.exports.handleFileError = handleFileError
+module.exports.extractXmlBuffersFromZip = extractXmlBuffersFromZip
+module.exports.parseXmlBufferToJson = parseXmlBufferToJson
+module.exports.cleanupFile = cleanupFile
+module.exports.getCweZipUrlAndPath = getCweZipUrlAndPath
+module.exports.getExternalReferencesByCwe = getExternalReferencesByCwe
+module.exports.fetchCwec = fetchCwec
+// Test helper – allows tests to seed the module-level reference array
+module.exports._setExternalReferenceAry = function (array) { externalReferenceAry = array }
 
 // CLI usage
 if (require.main === module) {
