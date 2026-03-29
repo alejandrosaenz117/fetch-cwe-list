@@ -4,7 +4,7 @@
   "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/unit.test.js",
     "release": "standard-version",
     "commit": "npx git-cz"
   },
