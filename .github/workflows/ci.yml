@@ -1,0 +1,135 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    name: Run Tests (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: run_tests
+        run: npm test
+
+  comment:
+    name: Post test results on PR
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request' && always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests and capture output
+        id: test_output
+        run: |
+          set +e
+          output=$(npm test 2>&1)
+          exit_code=$?
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          # Write output to a file to avoid multiline issues
+          echo "$output" > /tmp/test_output.txt
+          echo "tests_passed=$([ $exit_code -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Post comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const testOutput = fs.readFileSync('/tmp/test_output.txt', 'utf8');
+            const testsPassed = '${{ steps.test_output.outputs.tests_passed }}' === 'true';
+
+            const statusEmoji = testsPassed ? '✅' : '❌';
+            const statusText = testsPassed ? 'All tests passed' : 'Tests failed';
+
+            // Extract test summary from output
+            const passMatch = testOutput.match(/ℹ pass (\d+)/);
+            const failMatch = testOutput.match(/ℹ fail (\d+)/);
+            const totalMatch = testOutput.match(/ℹ tests (\d+)/);
+            const durationMatch = testOutput.match(/ℹ duration_ms ([\d.]+)/);
+
+            const passed = passMatch ? passMatch[1] : '?';
+            const failed = failMatch ? failMatch[1] : '?';
+            const total = totalMatch ? totalMatch[1] : '?';
+            const duration = durationMatch ? parseInt(durationMatch[1], 10) : '?';
+
+            const body = [
+              `## ${statusEmoji} Test Results`,
+              '',
+              `**Status:** ${statusText}`,
+              `**Tests:** ${passed}/${total} passed${failed !== '0' ? `, ${failed} failed` : ''}`,
+              `**Duration:** ${duration}ms`,
+              `**Node.js version:** 22.x`,
+              '',
+              '<details>',
+              '<summary>Full test output</summary>',
+              '',
+              '```',
+              testOutput.trim(),
+              '```',
+              '',
+              '</details>',
+              '',
+              `> Tested with the dependency versions proposed in this PR.`,
+            ].join('\n');
+
+            // Find existing bot comment and update it, or create a new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(
+              c => c.user.type === 'Bot' && c.body.includes('## ') && c.body.includes('Test Results')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

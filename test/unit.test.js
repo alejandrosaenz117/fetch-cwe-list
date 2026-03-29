@@ -76,7 +76,7 @@ describe('parseXmlBufferToJson', () => {
     assert.equal(result.Weakness_Catalog.Weaknesses.Weakness.length, 2, 'should have 2 weaknesses')
   })
 
-  test('preserves weakness ID attribute', () => {
+  test('parses weakness ID attribute as number', () => {
     const buf = Buffer.from(sampleCweXml, 'utf8')
     const result = parseXmlBufferToJson(buf)
     const first = result.Weakness_Catalog.Weaknesses.Weakness[0]
