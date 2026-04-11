@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.11](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.10...v0.0.11) (2026-04-11)
+
+
+### Bug Fixes
+
+* **deps:** resolve all critical and high severity vulnerabilities ([2d6342e](https://github.com/Whamo12/fetch-cwe-list/commit/2d6342e3a1b954c9020981510c85888e09d86ad5))
+
 ### [0.0.10](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.9...v0.0.10) (2026-04-11)
 
 ### [0.0.9](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.3...v0.0.9) (2026-04-11)
