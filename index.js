@@ -1,21 +1,19 @@
-const axios = require('axios').default
+const axios = require('axios')
 const unzipper = require('unzipper')
 const fs = require('fs')
-const parser = require('xml2json')
+const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
 const xmlFileName = path.join(__dirname, 'output', 'cwec_v4.9.xml')
 const filePath = path.join(__dirname, 'output')
 let externalReferenceAry = []
-const options = {
-  object: false,
-  reversible: false,
-  coerce: false,
-  sanitize: true,
-  trim: true,
-  arrayNotation: false,
-  alternateTextNode: false
-}
+const xmlParser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '',
+  parseAttributeValue: false,
+  trimValues: true,
+  processEntities: false
+})
 
 const fetchCwecLatest = () => {
   // eslint-disable-next-line no-async-promise-executor
@@ -36,8 +34,7 @@ const fetchCwecLatest = () => {
               if (err) {
                 console.error(err)
               }
-              const cweJson = parser.toJson(data)
-              const cweParsed = JSON.parse(cweJson, options)
+              const cweParsed = xmlParser.parse(data)
               const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
               externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
               resolve(cweWeaknessAry)
