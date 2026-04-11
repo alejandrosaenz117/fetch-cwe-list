@@ -5,7 +5,6 @@ const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
 const filePath = path.join(__dirname, 'output')
-let externalReferenceAry = []
 const xmlParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -17,6 +16,7 @@ const xmlParser = new XMLParser({
 const fetchCwecLatest = () => {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
+    let externalReferenceAry = []
     try {
       const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
         responseType: 'arraybuffer'
@@ -50,7 +50,7 @@ const fetchCwecLatest = () => {
             const cweParsed = xmlParser.parse(data)
             const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
             externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
-            resolve({ cweWeaknessAry, extractedXmlPath: entryFullPath })
+            resolve({ cweWeaknessAry, externalReferenceAry, extractedXmlPath: entryFullPath })
           })
           break
         }
@@ -62,7 +62,7 @@ const fetchCwecLatest = () => {
   })
 }
 
-const getExternalReferencesByCwe = (cwe) => {
+const getExternalReferencesByCwe = (cwe, externalReferenceAry) => {
   if (Array.isArray(cwe.References.Reference)) {
     cwe.References.Full_Details = []
     for (const externalReferenceId of cwe.References.Reference) {
@@ -76,10 +76,10 @@ const getExternalReferencesByCwe = (cwe) => {
 
 // TODO add optional parameters for deleting items and where to store them
 const fetchCweList = async () => {
-  const { cweWeaknessAry, extractedXmlPath } = await fetchCwecLatest()
+  const { cweWeaknessAry, externalReferenceAry, extractedXmlPath } = await fetchCwecLatest()
   try {
     for (const cwe of cweWeaknessAry) {
-      if (cwe.References) getExternalReferencesByCwe(cwe)
+      if (cwe.References) getExternalReferencesByCwe(cwe, externalReferenceAry)
     }
     return cweWeaknessAry
   } finally {
