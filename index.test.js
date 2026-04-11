@@ -490,6 +490,7 @@ describe('fetchCweList', () => {
         })
       })
 
+      // Test with single Reference element (object, not array)
       const xml = '<Weakness_Catalog><Weaknesses><Weakness><References><Reference><External_Reference_ID>REF-2</External_Reference_ID></Reference></References></Weakness></Weaknesses><External_References><External_Reference><Reference_ID>REF-2</Reference_ID><Title>Test Ref</Title></External_Reference></External_References></Weakness_Catalog>'
       fs.readFile.mockImplementation((filePath, callback) => {
         callback(null, Buffer.from(xml))
@@ -499,6 +500,9 @@ describe('fetchCweList', () => {
 
       expect(result).toBeDefined()
       expect(Array.isArray(result)).toBe(true)
+      expect(result[0].References.Full_Details).toBeDefined()
+      expect(Array.isArray(result[0].References.Full_Details)).toBe(true)
+      expect(result[0].References.Full_Details.length).toBe(1)
     })
   })
 })
