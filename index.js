@@ -1,81 +1,154 @@
-const axios = require('axios')
+const https = require('https')
 const unzipper = require('unzipper')
 const fs = require('fs')
 const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
-const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
-const filePath = path.join(__dirname, 'output')
-const xmlParser = new XMLParser({
+const options = {
   ignoreAttributes: false,
   attributeNamePrefix: '',
-  parseAttributeValue: false,
   trimValues: true,
+  parseAttributeValue: true,
   processEntities: false
-})
+}
 
-const fetchCwecLatest = async () => {
-  let externalReferenceAry = []
-  const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
-    responseType: 'arraybuffer',
-    timeout: 30000,
-    maxContentLength: 100 * 1024 * 1024
-  })
-  await new Promise((resolve, reject) => {
-    fs.writeFile(zipFileName, response.data, (writeErr) => {
-      if (writeErr) {
-        reject(writeErr)
-        return
+// Download the CWE zip file and save it locally
+async function downloadCweZip (url, destPath) {
+  return new Promise((resolve, reject) => {
+    const file = fs.createWriteStream(destPath)
+    const request = https.get(url, { timeout: 30000 }, (response) => {
+      if (response.statusCode === 404) {
+        file.close()
+        fs.unlink(destPath, () => {})
+        return reject(new Error(`CWE version not found at ${url} (status: 404)`))
       }
-      resolve()
-    })
-  })
-  const directory = await unzipper.Open.file(zipFileName)
-  const resolvedBase = path.resolve(filePath)
-  for (const entry of directory.files) {
-    if (entry.type === 'Directory') continue
-    const entryFullPath = path.resolve(resolvedBase, entry.path)
-    if (!entryFullPath.startsWith(resolvedBase + path.sep)) {
-      throw new Error(`Path traversal detected in ZIP entry: ${entry.path}`)
-    }
-    if (!entry.path.includes('cwec_v')) continue
-    await new Promise((extractResolve, extractReject) => {
-      entry.stream()
-        .pipe(fs.createWriteStream(entryFullPath))
-        .on('error', extractReject)
-        .on('finish', extractResolve)
-    })
-    const data = await new Promise((resolve, reject) => {
-      fs.readFile(entryFullPath, (err, fileData) => {
-        if (err) {
-          reject(err)
-          return
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        file.close()
+        fs.unlink(destPath, () => {})
+        return reject(new Error(`Failed to download file: ${url} (status: ${response.statusCode})`))
+      }
+      let contentLength = 0
+      const maxContentLength = 100 * 1024 * 1024
+      response.on('data', (chunk) => {
+        contentLength += chunk.length
+        if (contentLength > maxContentLength) {
+          file.close()
+          fs.unlink(destPath, () => {})
+          request.destroy()
+          reject(new Error(`Response size limit exceeded (${contentLength} bytes)`))
         }
-        resolve(fileData)
+      })
+      response.pipe(file)
+      file.on('finish', () => {
+        file.close(resolve)
       })
     })
-    const cweParsed = xmlParser.parse(data)
-    let cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness
-    // Handle single element vs array
-    if (!Array.isArray(cweWeaknessAry)) {
-      cweWeaknessAry = cweWeaknessAry ? [cweWeaknessAry] : []
+    request.on('timeout', () => {
+      file.close()
+      fs.unlink(destPath, () => {})
+      request.destroy()
+      reject(new Error('Download timeout (30 seconds)'))
+    })
+    request.on('error', (err) => {
+      handleFileError(file, destPath, reject, err)
+    })
+  })
+}
+
+function handleFileError(file, destPath, reject, error) {
+  file.close()
+  fs.unlink(destPath, () => {})
+  reject(error)
+}
+// Extract all XML files from the zip and return their buffers
+async function extractXmlBuffersFromZip (zipPath) {
+  const xmlBuffers = []
+  await new Promise((resolve, reject) => {
+    fs.createReadStream(zipPath)
+      .pipe(unzipper.Parse())
+      .on('entry', (entry) => {
+        const fileName = entry.path
+        if (fileName.endsWith('.xml')) {
+          const chunks = []
+          entry.on('data', (chunk) => chunks.push(chunk))
+          entry.on('end', () => xmlBuffers.push(Buffer.concat(chunks)))
+          entry.on('error', reject)
+        } else {
+          entry.autodrain()
+        }
+      })
+      .on('close', resolve)
+      .on('error', reject)
+  })
+  return xmlBuffers
+}
+
+// Parse XML buffer to JSON using fast-xml-parser
+function parseXmlBufferToJson (xmlBuffer, options) {
+  const xmlPreview = xmlBuffer.toString('utf8', 0, 200)
+  if (!xmlPreview.trim().startsWith('<?xml')) {
+    throw new Error('Extracted file does not appear to be valid XML.')
+  }
+  const parser = new XMLParser(options)
+  return parser.parse(xmlBuffer.toString('utf8'))
+}
+
+// Clean up temporary files
+function cleanupFile (filePath) {
+  try {
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+  } catch (cleanupErr) {
+    console.warn('Warning: Could not delete temporary files:', cleanupErr)
+  }
+}
+
+// Helper to construct the correct URL and zip path for a given version
+function getCweZipUrlAndPath (version) {
+  let url, zipPath
+  if (!version || version === 'latest') {
+    url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
+    zipPath = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
+  } else {
+    // Validate version string (e.g., "4.16")
+    // Only allow digits and dots, and must match the MITRE version format
+    if (!/^\d+(\.\d+)*$/.test(version)) {
+      throw new Error('Invalid version format. Use, for example, "4.16" or "latest".')
     }
-    let weaknessExternalRefs = cweParsed.Weakness_Catalog.External_References.External_Reference
-    // Handle single element vs array
-    if (!Array.isArray(weaknessExternalRefs)) {
-      weaknessExternalRefs = weaknessExternalRefs ? [weaknessExternalRefs] : []
+    // Prevent path traversal by rejecting any version with '..' or '/'
+    if (version.includes('..') || version.includes('/') || version.includes('\\')) {
+      throw new Error('Invalid version: path traversal is not allowed.')
     }
-    externalReferenceAry = weaknessExternalRefs
-    return { cweWeaknessAry, externalReferenceAry, extractedXmlPath: entryFullPath }
+    url = `https://cwe.mitre.org/data/xml/cwec_v${version}.xml.zip`
+    zipPath = path.join(__dirname, 'output', `cwec_v${version}.xml.zip`)
+  }
+  return { url, zipPath }
+}
+
+// Fetch and parse CWE catalog for a given version (or latest)
+async function fetchCwec (version) {
+  const { url, zipPath } = getCweZipUrlAndPath(version)
+  let externalReferenceAry = []
+  try {
+    await downloadCweZip(url, zipPath)
+    const xmlBuffers = await extractXmlBuffersFromZip(zipPath)
+    if (xmlBuffers.length === 0) throw new Error('No XML files found in the zip.')
+    const data = Buffer.concat(xmlBuffers)
+    const cweParsed = parseXmlBufferToJson(data, options)
+    const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
+    externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
+    cleanupFile(zipPath)
+    return { cweWeaknessAry, externalReferenceAry }
+  } catch (error) {
+    cleanupFile(zipPath)
+    throw error
   }
 }
 
 const getExternalReferencesByCwe = (cwe, externalReferenceAry) => {
-  if (!cwe.References) return
+  if (!cwe.References?.Reference) return
   // Normalize to array to handle both single object and array cases
   const references = Array.isArray(cwe.References.Reference)
     ? cwe.References.Reference
-    : cwe.References.Reference ? [cwe.References.Reference] : []
-  if (references.length === 0) return
+    : [cwe.References.Reference]
   cwe.References.Full_Details = []
   for (const externalReferenceId of references) {
     const fullReferenceDetails = externalReferenceAry.find(
@@ -85,18 +158,27 @@ const getExternalReferencesByCwe = (cwe, externalReferenceAry) => {
   }
 }
 
-// TODO add optional parameters for deleting items and where to store them
-const fetchCweList = async () => {
-  const { cweWeaknessAry, externalReferenceAry, extractedXmlPath } = await fetchCwecLatest()
-  try {
-    for (const cwe of cweWeaknessAry) {
-      if (cwe.References) getExternalReferencesByCwe(cwe, externalReferenceAry)
-    }
-    return cweWeaknessAry
-  } finally {
-    try { fs.unlinkSync(zipFileName) } catch (_) {}
-    try { fs.unlinkSync(extractedXmlPath) } catch (_) {}
+// Main API: fetchCweList([version])
+const fetchCweList = async (version) => {
+  const { cweWeaknessAry, externalReferenceAry } = await fetchCwec(version)
+  for (const cwe of cweWeaknessAry) {
+    if (cwe.References) getExternalReferencesByCwe(cwe, externalReferenceAry)
   }
+  return cweWeaknessAry
 }
 
 module.exports = fetchCweList
+
+// CLI usage
+if (require.main === module) {
+  // Accept version as optional CLI argument
+  const version = process.argv[2] || 'latest'
+  fetchCweList(version).then((list) => {
+    console.log(`Fetched ${list.length} CWE entries.`)
+    // Optionally print a sample entry
+    console.log(JSON.stringify(list[0], null, 2))
+  }).catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
