@@ -21,7 +21,11 @@ const fetchCwecLatest = () => {
       const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
         responseType: 'arraybuffer'
       })
-      fs.writeFile(zipFileName, response.data, async () => {
+      fs.writeFile(zipFileName, response.data, async (writeErr) => {
+        if (writeErr) {
+          reject(writeErr)
+          return
+        }
         const directory = await unzipper.Open.file(zipFileName)
         const resolvedBase = path.resolve(filePath)
         for (const entry of directory.files) {
