@@ -19,7 +19,9 @@ const fetchCwecLatest = () => {
     let externalReferenceAry = []
     try {
       const response = await axios.get('https://cwe.mitre.org/data/xml/cwec_latest.xml.zip', {
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
+        timeout: 30000,
+        maxContentLength: 100 * 1024 * 1024
       })
       fs.writeFile(zipFileName, response.data, async (writeErr) => {
         if (writeErr) {
