@@ -4,7 +4,9 @@
   "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage",
     "release": "standard-version",
     "commit": "npx git-cz"
   },
@@ -29,6 +31,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "husky": "^4.3.0",
+    "jest": "^29.7.0",
     "standard-version": "^9.0.0"
   },
   "husky": {
