@@ -4,7 +4,6 @@ const fs = require('fs')
 const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const zipFileName = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
-const xmlFileName = path.join(__dirname, 'output', 'cwec_v4.9.xml')
 const filePath = path.join(__dirname, 'output')
 let externalReferenceAry = []
 const xmlParser = new XMLParser({
@@ -23,24 +22,34 @@ const fetchCwecLatest = () => {
         responseType: 'arraybuffer'
       })
       fs.writeFile(zipFileName, response.data, async () => {
-        const readStream = fs.createReadStream(zipFileName).pipe(unzipper.Extract({ path: filePath }))
-        await new Promise((resolve) => readStream.on('close', resolve))
-        fs.readdirSync(filePath).forEach((file) => {
-          // The version changes but the intial file name is usually the same
-          if (file.includes('cwec_v')) {
-            const xmlFileName = file
-            const xmlPath = path.join(__dirname, 'output', xmlFileName)
-            fs.readFile(`${xmlPath}`, (err, data) => {
-              if (err) {
-                console.error(err)
-              }
-              const cweParsed = xmlParser.parse(data)
-              const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
-              externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
-              resolve(cweWeaknessAry)
-            })
+        const directory = await unzipper.Open.file(zipFileName)
+        const resolvedBase = path.resolve(filePath)
+        for (const entry of directory.files) {
+          if (entry.type === 'Directory') continue
+          const entryFullPath = path.resolve(resolvedBase, entry.path)
+          if (!entryFullPath.startsWith(resolvedBase + path.sep)) {
+            reject(new Error(`Path traversal detected in ZIP entry: ${entry.path}`))
+            return
           }
-        })
+          if (!entry.path.includes('cwec_v')) continue
+          await new Promise((extractResolve, extractReject) => {
+            entry.stream()
+              .pipe(fs.createWriteStream(entryFullPath))
+              .on('error', extractReject)
+              .on('finish', extractResolve)
+          })
+          fs.readFile(entryFullPath, (err, data) => {
+            if (err) {
+              reject(err)
+              return
+            }
+            const cweParsed = xmlParser.parse(data)
+            const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
+            externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
+            resolve({ cweWeaknessAry, extractedXmlPath: entryFullPath })
+          })
+          break
+        }
       })
     } catch (error) {
       console.error(error)
@@ -63,13 +72,16 @@ const getExternalReferencesByCwe = (cwe) => {
 
 // TODO add optional parameters for deleting items and where to store them
 const fetchCweList = async () => {
-  const cweWeaknessAry = await fetchCwecLatest()
-  for (const cwe of cweWeaknessAry) {
-    if (cwe.References) getExternalReferencesByCwe(cwe)
+  const { cweWeaknessAry, extractedXmlPath } = await fetchCwecLatest()
+  try {
+    for (const cwe of cweWeaknessAry) {
+      if (cwe.References) getExternalReferencesByCwe(cwe)
+    }
+    return cweWeaknessAry
+  } finally {
+    try { fs.unlinkSync(zipFileName) } catch (_) {}
+    try { fs.unlinkSync(extractedXmlPath) } catch (_) {}
   }
-  fs.unlinkSync(zipFileName)
-  fs.unlinkSync(`${xmlFileName}`)
-  return cweWeaknessAry
 }
 
 module.exports = fetchCweList
