@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.12](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.0.10...v0.0.12) (2026-04-11)
+
+
+### Bug Fixes
+
+* **deps:** resolve all critical and high severity vulnerabilities ([2d6342e](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/2d6342e3a1b954c9020981510c85888e09d86ad5))
+
+
+### Others
+
+* **release:** 0.0.11 ([b8037a8](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/b8037a8d517a48977c4d34a4e50eb6b219d32e60))
+* update repository URL to point to fork ([5e313ce](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/5e313ce626dbdeae3b22cdf25cf42da3045ff1db))
+
 ### [0.0.11](https://github.com/Whamo12/fetch-cwe-list/compare/v0.0.10...v0.0.11) (2026-04-11)
 
 
