@@ -45,9 +45,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Whamo12/fetch-cwe-list"
+    "url": "https://github.com/alejandrosaenz117/fetch-cwe-list"
   },
-  "homepage": "https://github.com/Whamo12/fetch-cwe-list",
+  "homepage": "https://github.com/alejandrosaenz117/fetch-cwe-list",
   "keywords": [
     "web security",
     "web application security",
