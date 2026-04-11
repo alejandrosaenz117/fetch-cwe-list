@@ -51,3 +51,7 @@ output/path
 # System Files
 .DS_Store
 Thumbs.db
+
+# Claude Code session artifacts and planning documents
+/.claude/
+/docs/

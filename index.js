@@ -50,8 +50,17 @@ const fetchCwecLatest = () => {
               return
             }
             const cweParsed = xmlParser.parse(data)
-            const cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness.map((x) => x)
-            externalReferenceAry = cweParsed.Weakness_Catalog.External_References.External_Reference
+            let cweWeaknessAry = cweParsed.Weakness_Catalog.Weaknesses.Weakness
+            // Handle single element vs array
+            if (!Array.isArray(cweWeaknessAry)) {
+              cweWeaknessAry = cweWeaknessAry ? [cweWeaknessAry] : []
+            }
+            let weaknessExternalRefs = cweParsed.Weakness_Catalog.External_References.External_Reference
+            // Handle single element vs array
+            if (!Array.isArray(weaknessExternalRefs)) {
+              weaknessExternalRefs = weaknessExternalRefs ? [weaknessExternalRefs] : []
+            }
+            externalReferenceAry = weaknessExternalRefs
             resolve({ cweWeaknessAry, externalReferenceAry, extractedXmlPath: entryFullPath })
           })
           break
