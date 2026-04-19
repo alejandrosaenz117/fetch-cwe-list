@@ -3,6 +3,7 @@ const unzipper = require('unzipper')
 const fs = require('fs')
 const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
+const { enrichReferences } = require('./lib/enrichReferences')
 const options = {
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -143,26 +144,11 @@ async function fetchCwec (version) {
   }
 }
 
-const getExternalReferencesByCwe = (cwe, externalReferenceAry) => {
-  if (!cwe.References?.Reference) return
-  // Normalize to array to handle both single object and array cases
-  const references = Array.isArray(cwe.References.Reference)
-    ? cwe.References.Reference
-    : [cwe.References.Reference]
-  cwe.References.Full_Details = []
-  for (const externalReferenceId of references) {
-    const fullReferenceDetails = externalReferenceAry.find(
-      (reference) => externalReferenceId.External_Reference_ID === reference.Reference_ID
-    )
-    cwe.References.Full_Details.push(fullReferenceDetails)
-  }
-}
-
 // Main API: fetchCweList([version])
 const fetchCweList = async (version) => {
   const { cweWeaknessAry, externalReferenceAry } = await fetchCwec(version)
   for (const cwe of cweWeaknessAry) {
-    if (cwe.References) getExternalReferencesByCwe(cwe, externalReferenceAry)
+    enrichReferences(cwe, externalReferenceAry)
   }
   return cweWeaknessAry
 }

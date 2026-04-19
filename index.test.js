@@ -45,15 +45,15 @@ describe('fetch-cwe-list security features', () => {
 
   describe('single reference enrichment', () => {
     test('handles single Reference element as object', () => {
-      const codeContent = fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8')
+      const codeContent = fs.readFileSync(path.join(__dirname, 'lib/enrichReferences.js'), 'utf8')
       // Should normalize single objects to arrays
       expect(codeContent).toMatch(/Array\.isArray\(cwe\.References\.Reference\)/)
-      expect(codeContent).toMatch(/cwe\.References\.Reference\s*:\s*\[cwe\.References\.Reference\]/)
+      expect(codeContent).toMatch(/\?\s*cwe\.References\.Reference\s*:\s*\[cwe\.References\.Reference\]/)
     })
 
-    test('getExternalReferencesByCwe accepts externalReferenceAry parameter', () => {
-      const codeContent = fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8')
-      expect(codeContent).toMatch(/getExternalReferencesByCwe\s*\(\s*cwe,\s*externalReferenceAry\s*\)/)
+    test('enrichReferences accepts externalReferenceAry parameter', () => {
+      const codeContent = fs.readFileSync(path.join(__dirname, 'lib/enrichReferences.js'), 'utf8')
+      expect(codeContent).toMatch(/enrichReferences\s*\(\s*cwe,\s*externalReferenceAry\s*\)/)
     })
   })
 
