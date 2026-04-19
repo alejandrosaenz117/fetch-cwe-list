@@ -2,15 +2,15 @@
 
 > **Experimental:** This package is in alpha (v0.1.0-alpha.0). APIs may change.
 
-MCP (Model Context Protocol) server that exposes the [fetch-cwe-list](../../README.md) library as tools for LLM agents like Claude.
+MCP (Model Context Protocol) server that exposes the [fetch-cwe-list](https://github.com/alejandrosaenz117/fetch-cwe-list) library as tools for LLM agents like Claude.
 
 ## Installation
 
 ```bash
-npm install -D fetch-cwe-list-mcp
+npm install -g fetch-cwe-list-mcp
 ```
 
-Or run directly with npx:
+Or run directly with npx (no installation needed):
 
 ```bash
 npx fetch-cwe-list-mcp
@@ -54,23 +54,24 @@ This starts the stdio-transport server. The protocol is JSON-RPC 2.0.
 
 All find tools auto-fetch and cache the CWE list on first invocation. Results are cached in memory for 1 hour.
 
+## Dependencies
+
+This package pins exact versions of critical dependencies for supply chain security:
+- `@modelcontextprotocol/sdk@1.29.0` — MCP protocol implementation
+- `fetch-cwe-list@0.0.12` — Core CWE data library
+- `zod@4.3.6` — Input validation
+
 ## Development
 
 ```bash
 # Install workspace dependencies
 npm install
 
-# Build TypeScript
-npm run build --workspace=packages/fetch-cwe-list-mcp
-
 # Run unit tests
 npm test --workspace=packages/fetch-cwe-list-mcp
 
-# Watch mode
-npm run build:watch --workspace=packages/fetch-cwe-list-mcp
-
 # Test with MCP Inspector (interactive browser UI)
-npx @modelcontextprotocol/inspector node packages/fetch-cwe-list-mcp/dist/index.js
+npx @modelcontextprotocol/inspector node packages/fetch-cwe-list-mcp/index.js
 ```
 
 ## License
