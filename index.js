@@ -6,6 +6,7 @@ const path = require('path')
 const { enrichReferences } = require('./lib/enrichReferences')
 const { enrichHierarchy } = require('./lib/enrichHierarchy')
 const { enrichCapec } = require('./lib/enrichCapec')
+const { enrichCve } = require('./lib/enrichCve')
 const options = {
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -153,6 +154,7 @@ const fetchCweList = async (version) => {
     enrichReferences(cwe, externalReferenceAry)
     enrichHierarchy(cwe)
     enrichCapec(cwe)
+    enrichCve(cwe)
   }
   return cweWeaknessAry
 }
