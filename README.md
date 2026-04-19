@@ -49,7 +49,7 @@ const cweList = await fetchCweList()
 
 const cwe79      = findById(cweList, '79')
 const injections = findByName(cweList, 'injection')
-const xssCwes    = findByCapec(cweList, '86')
+const xssCwes    = findByCapec(cweList, '209')  // CAPEC-209: XSS Using MIME Type Mismatch
 ```
 
 ### Access enriched data
@@ -59,7 +59,7 @@ const cweList = await fetchCweList()
 const cwe79 = findById(cweList, '79')
 
 // CAPEC attack patterns
-console.log(cwe79.CAPEC_IDs)  // ['86', '198', ...]
+console.log(cwe79.CAPEC_IDs)  // ['63', '85', '209', '588', '591', '592']
 
 // Hierarchy (parent weaknesses)
 console.log(cwe79.Hierarchy.parents)  // ['74']
@@ -159,7 +159,7 @@ Example entry:
   Name: "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
   Status: "Stable",
   Description: "...",
-  CAPEC_IDs: ['86', '198', '209'],
+  CAPEC_IDs: ['63', '85', '209', '588', '591', '592'],
   Known_CVEs: [
     { id: 'CVE-2008-0555', description: 'CSS filtering bypass...' }
   ],
