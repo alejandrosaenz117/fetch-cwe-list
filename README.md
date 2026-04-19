@@ -191,4 +191,4 @@ MIT
 
 ## Author
 
-[Alejandro Saenz](https://github.com/Whamo12)
+[Alejandro Saenz](https://github.com/alejandrosaenz117)
