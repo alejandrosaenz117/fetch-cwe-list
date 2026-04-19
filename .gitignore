@@ -2,6 +2,8 @@
 cwe-sdk-javascript
 # compiled output
 /dist
+packages/*/dist/
+packages/*/coverage/
 /tmp
 /out-tsc
 # Only exists if Bazel was run

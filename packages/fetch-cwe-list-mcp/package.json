@@ -1,0 +1,47 @@
+{
+  "name": "fetch-cwe-list-mcp",
+  "version": "0.1.0-alpha.0",
+  "description": "MCP (Model Context Protocol) server exposing fetch-cwe-list tools for LLM agents. Experimental/alpha — APIs may change.",
+  "license": "MIT",
+  "author": {
+    "name": "Alejandro Saenz",
+    "email": "alejandrosaenz117@gmail.com",
+    "url": "https://www.alejandrosaenz.com"
+  },
+  "main": "index.js",
+  "bin": {
+    "fetch-cwe-list-mcp": "./bin/server.js"
+  },
+  "files": [
+    "index.js",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "fetch-cwe-list": "*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cwe",
+    "security",
+    "common weakness enumeration"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alejandrosaenz117/fetch-cwe-list"
+  },
+  "homepage": "https://github.com/alejandrosaenz117/fetch-cwe-list/tree/main/packages/fetch-cwe-list-mcp"
+}

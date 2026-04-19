@@ -4,6 +4,7 @@
   "description": "A simple Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list",
   "main": "index.js",
   "types": "index.d.ts",
+  "workspaces": ["packages/*"],
   "scripts": {
     "test": "jest --coverage --testPathIgnorePatterns=integration.test.js",
     "test:watch": "jest --watch --testPathIgnorePatterns=integration.test.js",
