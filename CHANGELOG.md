@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.1.0...v0.1.1) (2026-04-19)
+
+
+### Features
+
+* **mcp:** add fetch-cwe-list-mcp MCP server workspace package ([ade1497](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/ade14974eb94dc6cc5c9a709d0e80b641912b6fd))
+
+
+### Bug Fixes
+
+* **mcp:** pin dependency versions for supply chain security ([8d6e128](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/8d6e128d350cfaed6f5b8534388ab52130109fb6))
+* replace __dirname with os.tmpdir() for ESM/ncc bundle compatibility ([87d5ce3](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/87d5ce3033d5baa96508bd0f08ddab31b6b1c3db))
+
+
+### Others
+
+* ignore cwe-sdk-javascript directory, remove demo.js ([86c3cbb](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/86c3cbbebe52c25a926160242bcf7df672e1ea41))
+
+
+### Docs
+
+* fix author GitHub link to alejandrosaenz117 ([7a43b66](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/7a43b669ffbdedb0cd08b756e8638851102c93e9))
+* fix CAPEC-79 examples with actual MITRE mappings ([a3271b4](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/a3271b4d9ff1a0d01295e68febfc5d15f55e8668))
+* fix CVE example in README with actual CWE-79 observed CVE ([4421922](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/442192282704de73287befb840309f812c187fa9))
+* streamline README - remove fluff, consolidate examples ([53c245f](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/53c245f37e41152c2a8ce74aa8185804fa3b0627))
+
+
+### Tests
+
+* add 37 integration tests against live MITRE data ([a0db8da](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/a0db8da3bbd3c9f75b0a3b6773b342f07c2fe6b6))
+* add verified CAPEC-to-CWE mapping integration tests ([da51056](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/da510564e3bccbfa117b1d0afa7b8ed6c5240f4d))
+* **mcp:** expand test suite to 31 comprehensive tests ([4a2f586](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/4a2f5867a1812ca75b3c7cd850c999726688de77))
+
 ## [0.1.0](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.0.12...v0.1.0) (2026-04-19)
 
 
