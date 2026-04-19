@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.1.0](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.0.12...v0.1.0) (2026-04-19)
+
+
+### Features
+
+* add CAPEC_IDs enrichment from Related_Attack_Patterns ([bb93470](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/bb93470bedb11e243f2ce052baa54d22a932a7f0))
+* add findById, findByName (string-only, ReDoS-safe), findByCapec named exports ([e2e2d37](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/e2e2d37db08f7b0f42fea9fee264692b8f12e2d9))
+* add Hierarchy enrichment (parents array + full relationships) ([97925d2](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/97925d2cfda97ba1ea9a24c0a19da4ed3c075546))
+* add Known_CVEs enrichment from Observed_Examples ([eb266e3](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/eb266e3acb09450d9ab3433057687b2a182ba512))
+* add opt-in TTL cache with clone isolation, in-flight dedup, clearCache() API ([5e2103d](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/5e2103d9f25b9d53afd378dd8151d0bfedb9cead))
+* add TypeScript definitions (index.d.ts) ([68843f1](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/68843f169aabaa070859ea1dfd274ffddf81c6da))
+
+
+### Code Refactoring
+
+* extract reference enrichment into lib/, normalize cwe.ID to string ([dbd4013](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/dbd4013462d88d526b975e01a0cb8302541f49a1))
+
+
+### Docs
+
+* add v0.1.0 feature documentation (CAPEC, Hierarchy, CVEs, query helpers, cache, TypeScript) ([d984b3a](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/d984b3a82a6a7869a2e6db226cc5522990cd00a0))
+
 ### [0.0.12](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.0.10...v0.0.12) (2026-04-11)
 
 
