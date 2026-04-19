@@ -107,4 +107,14 @@ describe('fetch-cwe-list security features', () => {
       expect(codeContent).toMatch(/structuredClone/)
     })
   })
+
+  describe('named exports', () => {
+    test('findById, findByName, findByCapec, clearCache are exported', () => {
+      const mod = require('./index')
+      expect(typeof mod.findById).toBe('function')
+      expect(typeof mod.findByName).toBe('function')
+      expect(typeof mod.findByCapec).toBe('function')
+      expect(typeof mod.clearCache).toBe('function')
+    })
+  })
 })

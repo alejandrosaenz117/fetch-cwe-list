@@ -8,6 +8,7 @@ const { enrichHierarchy } = require('./lib/enrichHierarchy')
 const { enrichCapec } = require('./lib/enrichCapec')
 const { enrichCve } = require('./lib/enrichCve')
 const { createCache } = require('./lib/cache')
+const { findById, findByName, findByCapec } = require('./lib/query')
 
 // Module-level cache and in-flight dedup map.
 // Neither is exported — use clearCache() to invalidate.
@@ -205,6 +206,9 @@ function clearCache() {
 
 module.exports = fetchCweList
 module.exports.clearCache = clearCache
+module.exports.findById = findById
+module.exports.findByName = findByName
+module.exports.findByCapec = findByCapec
 
 // CLI usage
 if (require.main === module) {
