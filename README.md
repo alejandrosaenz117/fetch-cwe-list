@@ -161,7 +161,7 @@ Example entry:
   Description: "...",
   CAPEC_IDs: ['63', '85', '209', '588', '591', '592'],
   Known_CVEs: [
-    { id: 'CVE-2008-0555', description: 'CSS filtering bypass...' }
+    { id: 'CVE-2021-1879', description: '...' }
   ],
   Hierarchy: {
     parents: ['74'],
