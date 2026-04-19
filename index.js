@@ -189,7 +189,7 @@ const fetchCweList = async (version, opts = {}) => {
 
   if (useCache) {
     _inflight.set(cacheKey, fetchPromise)
-    fetchPromise.finally(() => _inflight.delete(cacheKey))
+    fetchPromise.finally(() => _inflight.delete(cacheKey)).catch(() => {})
   }
 
   return fetchPromise

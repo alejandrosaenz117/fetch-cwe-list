@@ -5,9 +5,10 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "jest --coverage",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci --coverage",
+    "test": "jest --coverage --testPathIgnorePatterns=integration.test.js",
+    "test:watch": "jest --watch --testPathIgnorePatterns=integration.test.js",
+    "test:ci": "jest --ci --coverage --testPathIgnorePatterns=integration.test.js",
+    "test:integration": "jest integration.test.js --testTimeout=60000 --verbose --forceExit",
     "release": "standard-version",
     "commit": "npx git-cz"
   },
