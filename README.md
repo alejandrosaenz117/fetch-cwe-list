@@ -98,12 +98,78 @@ const cwe1004 = cweList.find(cwe => cwe.ID === '1004')
 console.log(cwe1004.Name)  // "Sensitive Cookie Without 'HttpOnly' Flag"
 ```
 
+### Access CAPEC Attack Pattern IDs
+
+```javascript
+const cweList = await fetchCweList()
+const cwe79 = cweList.find(cwe => cwe.ID === '79')
+console.log(cwe79.CAPEC_IDs)  // ['86', '198', ...]
+```
+
+### Find CWEs by CAPEC ID
+
+```javascript
+const { findByCapec } = require('fetch-cwe-list')
+const cweList = await fetchCweList()
+const xssCwes = findByCapec(cweList, '86')
+```
+
+### Traverse the CWE Hierarchy
+
+```javascript
+const cweList = await fetchCweList()
+const cwe79 = cweList.find(cwe => cwe.ID === '79')
+console.log(cwe79.Hierarchy.parents)        // ['74']
+console.log(cwe79.Hierarchy.relationships)  // full relationship details
+```
+
+### Look Up Known CVEs
+
+```javascript
+const cweList = await fetchCweList()
+const cwe89 = cweList.find(cwe => cwe.ID === '89')
+cwe89.Known_CVEs.forEach(({ id, description }) => {
+  console.log(`${id}: ${description}`)
+})
+```
+
+### Use Query Helpers
+
+```javascript
+const { findById, findByName } = require('fetch-cwe-list')
+const cweList = await fetchCweList()
+
+const cwe79    = findById(cweList, '79')
+const injections = findByName(cweList, 'injection')  // case-insensitive substring
+```
+
+### Cache Behavior
+
+```javascript
+const fetchCweList = require('fetch-cwe-list')
+const { clearCache } = require('fetch-cwe-list')
+
+// First call downloads from MITRE and caches for 1 hour
+const cweList = await fetchCweList()
+
+// Subsequent calls return cached data instantly
+const cweList2 = await fetchCweList()
+
+// Bypass the cache for a single call
+const fresh = await fetchCweList('latest', { cache: false })
+
+// Invalidate the cache manually (e.g. after a MITRE release)
+clearCache()
+```
+
 ## API Reference
 
-### `fetchCweList([version])`
+### `fetchCweList([version], [opts])`
 
 **Parameters:**
 - `version` (string, optional) — CWE version to fetch (e.g., `'4.13'`). Defaults to `'latest'`.
+- `opts` (object, optional) — Options:
+  - `cache` (boolean, optional) — Set to `false` to bypass cache. Default: `true`
 
 **Returns:**
 - Promise resolving to array of CWE objects
@@ -111,9 +177,58 @@ console.log(cwe1004.Name)  // "Sensitive Cookie Without 'HttpOnly' Flag"
 **Throws:**
 - Error if download fails, timeout occurs, or version not found
 
+### `clearCache()`
+
+Clears the in-memory cache. The cache instance itself is not exposed to prevent external poisoning via `cache.set()`.
+
+### `findById(cweList, id)`
+
+Find a single CWE by its ID string.
+
+**Parameters:**
+- `cweList` — Array returned by `fetchCweList()`
+- `id` (string) — The CWE ID, e.g., `'79'`
+
+**Returns:**
+- CWE object or `undefined`
+
+### `findByName(cweList, pattern)`
+
+Find all CWEs whose name contains the given string (case-insensitive).
+
+**Parameters:**
+- `cweList` — Array returned by `fetchCweList()`
+- `pattern` (string) — Case-insensitive substring
+
+**Returns:**
+- Array of CWE objects
+
+**Note:** RegExp is intentionally not supported to prevent ReDoS attacks.
+
+### `findByCapec(cweList, capecId)`
+
+Find all CWEs that map to a given CAPEC ID string.
+
+**Parameters:**
+- `cweList` — Array returned by `fetchCweList()`
+- `capecId` (string) — The CAPEC ID, e.g., `'86'`
+
+**Returns:**
+- Array of CWE objects
+
 ## Data Structure
 
-Each CWE entry contains MITRE's fields plus enriched reference data:
+Each CWE entry contains MITRE's fields plus enriched data after v0.1.0:
+
+| Field | Type | Always present | Description |
+|-------|------|---------------|-------------|
+| `ID` | `string` | Yes | CWE ID (normalized from numeric parser output) |
+| `CAPEC_IDs` | `string[]` | Yes | Mapped CAPEC attack pattern IDs (empty array if none) |
+| `Known_CVEs` | `{ id, description }[]` | Yes | CVEs from Observed_Examples (empty array if none) |
+| `Hierarchy` | object | No | Parent relationships (absent if no Related_Weaknesses) |
+| `References.Full_Details` | object[] | No | Enriched external reference objects |
+
+Example entry:
 
 ```javascript
 {
@@ -121,6 +236,16 @@ Each CWE entry contains MITRE's fields plus enriched reference data:
   Name: "Sensitive Cookie Without 'HttpOnly' Flag",
   Status: "Incomplete",
   Description: "...",
+  CAPEC_IDs: ['62', '103'],
+  Known_CVEs: [
+    { id: 'CVE-2020-1234', description: 'Cookie bypass...' }
+  ],
+  Hierarchy: {
+    parents: ['200', '693'],
+    relationships: [
+      { nature: 'ChildOf', cweId: '200', viewId: '1000', ordinal: 'Primary' }
+    ]
+  },
   References: {
     Reference: [
       { External_Reference_ID: "REF-2" }
@@ -134,11 +259,11 @@ Each CWE entry contains MITRE's fields plus enriched reference data:
       }
     ]
   },
-  // ... other CWE fields
+  // ... other MITRE CWE fields
 }
 ```
 
-**Note:** Single references are automatically normalized to arrays and enriched just like multiple references.
+**Note:** Single references are automatically normalized to arrays and enriched just like multiple references. IDs are normalized to strings for consistency across all API surfaces.
 
 ### Full Entry Example
 
