@@ -7,6 +7,13 @@ const { enrichReferences } = require('./lib/enrichReferences')
 const { enrichHierarchy } = require('./lib/enrichHierarchy')
 const { enrichCapec } = require('./lib/enrichCapec')
 const { enrichCve } = require('./lib/enrichCve')
+const { createCache } = require('./lib/cache')
+
+// Module-level cache and in-flight dedup map.
+// Neither is exported — use clearCache() to invalidate.
+const _cache = createCache()
+const _inflight = new Map()
+
 const options = {
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -147,19 +154,57 @@ async function fetchCwec (version) {
   }
 }
 
-// Main API: fetchCweList([version])
-const fetchCweList = async (version) => {
-  const { cweWeaknessAry, externalReferenceAry } = await fetchCwec(version)
-  for (const cwe of cweWeaknessAry) {
-    enrichReferences(cwe, externalReferenceAry)
-    enrichHierarchy(cwe)
-    enrichCapec(cwe)
-    enrichCve(cwe)
+/**
+ * @param {string} [version] - CWE version to fetch, defaults to 'latest'
+ * @param {object} [opts]
+ * @param {boolean} [opts.cache=true] - Set to false to bypass cache
+ */
+const fetchCweList = async (version, opts = {}) => {
+  const useCache = opts.cache !== false
+  const cacheKey = version || 'latest'
+
+  if (useCache) {
+    const cached = _cache.get(cacheKey)
+    if (cached) return cached
+
+    // In-flight deduplication: concurrent callers for the same key share one
+    // Promise rather than launching N simultaneous MITRE downloads.
+    if (_inflight.has(cacheKey)) return _inflight.get(cacheKey)
   }
-  return cweWeaknessAry
+
+  const fetchPromise = (async () => {
+    const { cweWeaknessAry, externalReferenceAry } = await fetchCwec(version)
+    for (const cwe of cweWeaknessAry) {
+      enrichReferences(cwe, externalReferenceAry)
+      enrichHierarchy(cwe)
+      enrichCapec(cwe)
+      enrichCve(cwe)
+    }
+    if (useCache) {
+      _cache.set(cacheKey, cweWeaknessAry)
+    }
+    return cweWeaknessAry
+  })()
+
+  if (useCache) {
+    _inflight.set(cacheKey, fetchPromise)
+    fetchPromise.finally(() => _inflight.delete(cacheKey))
+  }
+
+  return fetchPromise
+}
+
+/**
+ * Clears the in-memory cache. Use when fresh data is needed before the TTL
+ * expires. The cache instance itself is not exposed — this is the only public
+ * cache API, preventing external poisoning via cache.set().
+ */
+function clearCache() {
+  _cache.clear()
 }
 
 module.exports = fetchCweList
+module.exports.clearCache = clearCache
 
 // CLI usage
 if (require.main === module) {

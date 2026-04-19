@@ -82,12 +82,29 @@ describe('fetch-cwe-list security features', () => {
   describe('API compatibility', () => {
     test('fetchCweList accepts optional version parameter', () => {
       const codeContent = fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8')
-      expect(codeContent).toMatch(/const fetchCweList\s*=\s*async\s*\(\s*version\s*\)/)
+      expect(codeContent).toMatch(/const fetchCweList\s*=\s*async\s*\(\s*version\s*,/)
     })
 
     test('exports fetchCweList as module.exports', () => {
       const codeContent = fs.readFileSync(path.join(__dirname, 'index.js'), 'utf8')
       expect(codeContent).toMatch(/module\.exports\s*=\s*fetchCweList/)
+    })
+  })
+
+  describe('cache API', () => {
+    test('clearCache is exported as a function', () => {
+      const mod = require('./index')
+      expect(typeof mod.clearCache).toBe('function')
+    })
+
+    test('_cache is NOT directly exposed on the export', () => {
+      const mod = require('./index')
+      expect(mod._cache).toBeUndefined()
+    })
+
+    test('cache module uses structuredClone', () => {
+      const codeContent = fs.readFileSync(path.join(__dirname, 'lib/cache.js'), 'utf8')
+      expect(codeContent).toMatch(/structuredClone/)
     })
   })
 })
