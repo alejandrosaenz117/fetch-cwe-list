@@ -97,9 +97,84 @@ describe('CAPEC enrichment', () => {
     expect(cwe79.CAPEC_IDs).toContain('209')
   })
 
+  test('CWE-79 has all 6 known CAPEC mappings', () => {
+    const cwe79 = findById(cweList, '79')
+    // Verified against https://cwe.mitre.org/data/definitions/79.html
+    expect(cwe79.CAPEC_IDs).toContain('63')   // Cross-Site Scripting (XSS)
+    expect(cwe79.CAPEC_IDs).toContain('85')   // AJAX Footprinting
+    expect(cwe79.CAPEC_IDs).toContain('209')  // XSS Using MIME Type Mismatch
+    expect(cwe79.CAPEC_IDs).toContain('588')  // DOM-Based XSS
+    expect(cwe79.CAPEC_IDs).toContain('591')  // Reflected XSS
+    expect(cwe79.CAPEC_IDs).toContain('592')  // Stored XSS
+  })
+
+  test('CWE-89 (SQL Injection) maps to all 6 known CAPECs', () => {
+    const cwe89 = findById(cweList, '89')
+    // Verified against https://cwe.mitre.org/data/definitions/89.html
+    expect(cwe89.CAPEC_IDs).toContain('7')    // Blind SQL Injection
+    expect(cwe89.CAPEC_IDs).toContain('66')   // SQL Injection
+    expect(cwe89.CAPEC_IDs).toContain('108')  // Command Line Execution through SQL Injection
+    expect(cwe89.CAPEC_IDs).toContain('109')  // ORM Injection
+    expect(cwe89.CAPEC_IDs).toContain('110')  // SQL Injection through SOAP
+    expect(cwe89.CAPEC_IDs).toContain('470')  // Expanding Control over OS from Database
+  })
+
+  test('CWE-22 (Path Traversal) maps to all 5 known CAPECs', () => {
+    const cwe22 = findById(cweList, '22')
+    // Verified against https://cwe.mitre.org/data/definitions/22.html
+    expect(cwe22.CAPEC_IDs).toContain('64')   // Using Slashes and URL Encoding
+    expect(cwe22.CAPEC_IDs).toContain('76')   // Manipulating Web Input to File System Calls
+    expect(cwe22.CAPEC_IDs).toContain('78')   // Using Escaped Slashes in Alternate Encoding
+    expect(cwe22.CAPEC_IDs).toContain('79')   // Using Slashes in Alternate Encoding
+    expect(cwe22.CAPEC_IDs).toContain('126')  // Path Traversal
+  })
+
+  test('CWE-306 (Missing Authentication) maps to all 5 known CAPECs', () => {
+    const cwe306 = findById(cweList, '306')
+    // Verified against https://cwe.mitre.org/data/definitions/306.html
+    expect(cwe306.CAPEC_IDs).toContain('12')   // Choosing Message Identifier
+    expect(cwe306.CAPEC_IDs).toContain('36')   // Using Unpublished Interfaces
+    expect(cwe306.CAPEC_IDs).toContain('62')   // Cross Site Request Forgery
+    expect(cwe306.CAPEC_IDs).toContain('166')  // Force the System to Reset Values
+    expect(cwe306.CAPEC_IDs).toContain('216')  // Communication Channel Manipulation
+  })
+
+  test('CWE-1004 (Sensitive Cookie Without HttpOnly) has no CAPEC mappings', () => {
+    const cwe1004 = findById(cweList, '1004')
+    // Verified against https://cwe.mitre.org/data/definitions/1004.html
+    expect(cwe1004.CAPEC_IDs).toEqual([])
+  })
+
+  test('findByCapec("66") returns CWE-89 (SQL Injection)', () => {
+    const results = findByCapec(cweList, '66')
+    const ids = results.map(c => c.ID)
+    expect(ids).toContain('89')
+  })
+
+  test('findByCapec("126") returns CWE-22 (Path Traversal)', () => {
+    const results = findByCapec(cweList, '126')
+    const ids = results.map(c => c.ID)
+    expect(ids).toContain('22')
+  })
+
+  test('findByCapec("209") returns both CWE-79 and CWE-20', () => {
+    const results = findByCapec(cweList, '209')
+    const ids = results.map(c => c.ID)
+    // CAPEC-209 maps to multiple CWEs including both 79 and 20
+    expect(ids).toContain('79')
+    expect(ids).toContain('20')
+  })
+
   test('at least 300 CWEs have CAPEC mappings', () => {
     const withCapec = cweList.filter(cwe => cwe.CAPEC_IDs.length > 0)
     expect(withCapec.length).toBeGreaterThan(300)
+  })
+
+  test('CWE-20 (Improper Input Validation) has more than 40 CAPEC mappings', () => {
+    const cwe20 = findById(cweList, '20')
+    // CWE-20 is a broad category with many attack pattern mappings
+    // Verified against https://cwe.mitre.org/data/definitions/20.html (50 CAPECs)
+    expect(cwe20.CAPEC_IDs.length).toBeGreaterThan(40)
   })
 })
 
