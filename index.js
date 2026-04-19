@@ -5,6 +5,7 @@ const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const { enrichReferences } = require('./lib/enrichReferences')
 const { enrichHierarchy } = require('./lib/enrichHierarchy')
+const { enrichCapec } = require('./lib/enrichCapec')
 const options = {
   ignoreAttributes: false,
   attributeNamePrefix: '',
@@ -151,6 +152,7 @@ const fetchCweList = async (version) => {
   for (const cwe of cweWeaknessAry) {
     enrichReferences(cwe, externalReferenceAry)
     enrichHierarchy(cwe)
+    enrichCapec(cwe)
   }
   return cweWeaknessAry
 }
