@@ -1,6 +1,7 @@
 const https = require('https')
 const unzipper = require('unzipper')
 const fs = require('fs')
+const os = require('os')
 const { XMLParser } = require('fast-xml-parser')
 const path = require('path')
 const { enrichReferences } = require('./lib/enrichReferences')
@@ -118,7 +119,7 @@ function getCweZipUrlAndPath (version) {
   let url, zipPath
   if (!version || version === 'latest') {
     url = 'https://cwe.mitre.org/data/xml/cwec_latest.xml.zip'
-    zipPath = path.join(__dirname, 'output', 'cwec_latest.xml.zip')
+    zipPath = path.join(os.tmpdir(), 'cwec_latest.xml.zip')
   } else {
     // Validate version string (e.g., "4.16")
     // Only allow digits and dots, and must match the MITRE version format
@@ -130,7 +131,7 @@ function getCweZipUrlAndPath (version) {
       throw new Error('Invalid version: path traversal is not allowed.')
     }
     url = `https://cwe.mitre.org/data/xml/cwec_v${version}.xml.zip`
-    zipPath = path.join(__dirname, 'output', `cwec_v${version}.xml.zip`)
+    zipPath = path.join(os.tmpdir(), `cwec_v${version}.xml.zip`)
   }
   return { url, zipPath }
 }
