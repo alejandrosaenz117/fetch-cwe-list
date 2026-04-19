@@ -21,144 +21,67 @@ const cweListV413 = await fetchCweList('4.13')
 
 That's it. Each entry includes parsed CWE data with enriched external references.
 
-## Why This Module?
+## Features
 
-**Secure by default:**
-- ✅ **30-second timeout** — prevents slow-read DoS attacks
-- ✅ **100MB response limit** — prevents memory exhaustion  
-- ✅ **XXE protection** — XML entity expansion disabled
-- ✅ **Concurrency safe** — no shared state between calls
+- **Live data** — Always current, fetched directly from MITRE
+- **Enriched** — CAPEC mappings, CVE context, hierarchy relationships, external references
+- **Cached** — Optional 1-hour TTL cache (configurable)
+- **Query helpers** — `findById`, `findByName`, `findByCapec` for common lookups
+- **Secure** — 30s timeout, 100MB size limit, XXE protection, no shared state
+- **TypeScript** — Full type definitions included
 
-**Developer friendly:**
-- ✅ **Version pinning** — fetch any published CWE version
-- ✅ **Reference enrichment** — external refs automatically mapped to full details
-- ✅ **Single reference handling** — normalized consistently
-- ✅ **Error handling** — clear, actionable error messages
+## Usage
 
-## Usage Examples
-
-### Fetch Latest CWE List
+### Fetch and iterate
 
 ```javascript
-const fetchCweList = require('fetch-cwe-list')
-
 const cweList = await fetchCweList()
 cweList.forEach(cwe => {
   console.log(`${cwe.ID}: ${cwe.Name}`)
 })
 ```
 
-### Fetch Specific Version
+### Use query helpers
 
 ```javascript
-// Fetch CWE v4.13
-const cweList = await fetchCweList('4.13')
-console.log(`Fetched ${cweList.length} entries for v4.13`)
+const { findById, findByName, findByCapec } = require('fetch-cwe-list')
+const cweList = await fetchCweList()
+
+const cwe79      = findById(cweList, '79')
+const injections = findByName(cweList, 'injection')
+const xssCwes    = findByCapec(cweList, '86')
 ```
 
-### Handle Errors
-
-```javascript
-try {
-  const cweList = await fetchCweList('4.99')  // Version not found
-} catch (err) {
-  console.error(err.message)
-  // Output: "CWE version not found at ... (status: 404)"
-}
-
-try {
-  const cweList = await fetchCweList()  // Timeout
-} catch (err) {
-  console.error(err.message)
-  // Output: "Download timeout (30 seconds)"
-}
-```
-
-### Use .then() Instead of Async/Await
-
-```javascript
-fetchCweList()
-  .then(cweList => console.log(`Fetched ${cweList.length} CWE entries`))
-  .catch(err => console.error('Failed:', err.message))
-```
-
-### Search CWE Entries
+### Access enriched data
 
 ```javascript
 const cweList = await fetchCweList()
+const cwe79 = findById(cweList, '79')
 
-// Find all injection weaknesses
-const injections = cweList.filter(cwe => 
-  cwe.Name.toLowerCase().includes('injection')
-)
-console.log(`Found ${injections.length} injection CWEs`)
-
-// Find by ID
-const cwe1004 = cweList.find(cwe => cwe.ID === '1004')
-console.log(cwe1004.Name)  // "Sensitive Cookie Without 'HttpOnly' Flag"
-```
-
-### Access CAPEC Attack Pattern IDs
-
-```javascript
-const cweList = await fetchCweList()
-const cwe79 = cweList.find(cwe => cwe.ID === '79')
+// CAPEC attack patterns
 console.log(cwe79.CAPEC_IDs)  // ['86', '198', ...]
-```
 
-### Find CWEs by CAPEC ID
+// Hierarchy (parent weaknesses)
+console.log(cwe79.Hierarchy.parents)  // ['74']
 
-```javascript
-const { findByCapec } = require('fetch-cwe-list')
-const cweList = await fetchCweList()
-const xssCwes = findByCapec(cweList, '86')
-```
-
-### Traverse the CWE Hierarchy
-
-```javascript
-const cweList = await fetchCweList()
-const cwe79 = cweList.find(cwe => cwe.ID === '79')
-console.log(cwe79.Hierarchy.parents)        // ['74']
-console.log(cwe79.Hierarchy.relationships)  // full relationship details
-```
-
-### Look Up Known CVEs
-
-```javascript
-const cweList = await fetchCweList()
-const cwe89 = cweList.find(cwe => cwe.ID === '89')
-cwe89.Known_CVEs.forEach(({ id, description }) => {
+// Known CVEs
+cwe79.Known_CVEs.forEach(({ id, description }) => {
   console.log(`${id}: ${description}`)
 })
 ```
 
-### Use Query Helpers
+### Cache control
 
 ```javascript
-const { findById, findByName } = require('fetch-cwe-list')
-const cweList = await fetchCweList()
-
-const cwe79    = findById(cweList, '79')
-const injections = findByName(cweList, 'injection')  // case-insensitive substring
-```
-
-### Cache Behavior
-
-```javascript
-const fetchCweList = require('fetch-cwe-list')
 const { clearCache } = require('fetch-cwe-list')
 
-// First call downloads from MITRE and caches for 1 hour
-const cweList = await fetchCweList()
+const list1 = await fetchCweList()  // Downloads, caches for 1 hour
+const list2 = await fetchCweList()  // Instant (cached)
 
-// Subsequent calls return cached data instantly
-const cweList2 = await fetchCweList()
-
-// Bypass the cache for a single call
+// Bypass cache
 const fresh = await fetchCweList('latest', { cache: false })
 
-// Invalidate the cache manually (e.g. after a MITRE release)
+// Invalidate cache
 clearCache()
 ```
 
@@ -232,86 +155,35 @@ Example entry:
 
 ```javascript
 {
-  ID: "1004",
-  Name: "Sensitive Cookie Without 'HttpOnly' Flag",
-  Status: "Incomplete",
+  ID: "79",
+  Name: "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+  Status: "Stable",
   Description: "...",
-  CAPEC_IDs: ['62', '103'],
+  CAPEC_IDs: ['86', '198', '209'],
   Known_CVEs: [
-    { id: 'CVE-2020-1234', description: 'Cookie bypass...' }
+    { id: 'CVE-2008-0555', description: 'CSS filtering bypass...' }
   ],
   Hierarchy: {
-    parents: ['200', '693'],
+    parents: ['74'],
     relationships: [
-      { nature: 'ChildOf', cweId: '200', viewId: '1000', ordinal: 'Primary' }
+      { nature: 'ChildOf', cweId: '74', viewId: '1000', ordinal: 'Primary' }
     ]
   },
   References: {
-    Reference: [
-      { External_Reference_ID: "REF-2" }
-    ],
+    Reference: [{ External_Reference_ID: "REF-2" }],
     Full_Details: [
       {
         Reference_ID: "REF-2",
         Author: "OWASP",
-        Title: "HttpOnly",
+        Title: "Cross Site Scripting (XSS)",
         URL: "https://www.owasp.org/..."
       }
     ]
-  },
-  // ... other MITRE CWE fields
+  }
 }
 ```
 
 **Note:** Single references are automatically normalized to arrays and enriched just like multiple references. IDs are normalized to strings for consistency across all API surfaces.
-
-### Full Entry Example
-
-Click to see a [complete CWE entry](./EXAMPLE_OUTPUT.md) with all fields.
-
-## Security Details
-
-This module protects against common attack vectors:
-
-| Threat | Protection |
-|--------|-----------|
-| **Slow-read DoS** | 30-second timeout on downloads |
-| **Memory exhaustion** | 100MB max response size |
-| **XXE injection** | XML entity expansion disabled |
-| **Data leakage** | Function-scoped state (no module-level shared state) |
-| **Path traversal** | Version parameter validated |
-
-## Troubleshooting
-
-### "Download timeout (30 seconds)"
-
-The MITRE server took too long to respond. This is rare but can happen if:
-- Your network is slow
-- MITRE servers are overloaded
-- You're behind a restrictive firewall
-
-**Solution:** Retry after a few seconds. Timeouts protect against slow-read DoS attacks.
-
-### "CWE version not found"
-
-The requested version doesn't exist in MITRE's archive. Valid versions include `'4.13'`, `'4.12'`, etc.
-
-**Solution:** Use `'latest'` (or omit the parameter) to fetch the current version.
-
-### "Response size limit exceeded"
-
-The response was larger than 100MB. This is a security protection against memory exhaustion attacks.
-
-**Solution:** This shouldn't happen with normal CWE data. If it does, report an issue.
-
-## Version History
-
-- **v0.0.8** — Security hardening: timeouts, response size limits, XXE prevention
-- **v0.0.7** — Version pinning support
-- **v0.0.6** — Switched to Node.js https module
-- **v0.0.5** — Added specific version fetching
-- **v0.0.4** — Migrated to fast-xml-parser
-- **v0.0.3** — Initial release
 
 ## License
 
