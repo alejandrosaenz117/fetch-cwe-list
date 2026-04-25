@@ -2,7 +2,7 @@ name: Guppy Security Scan
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 permissions:
   contents: read
@@ -28,5 +28,3 @@ jobs:
           severity_threshold: high
           enable_sca: true
           post_comments: true
-          upload_sarif: true
-          sarif_filename: guppy-results.sarif
