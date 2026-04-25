@@ -1,5 +1,7 @@
 # fetch-cwe-list
 
+[![npm](https://img.shields.io/npm/v/fetch-cwe-list)](https://www.npmjs.com/package/fetch-cwe-list)
+
 A simple, secure Node.js module that fetches and parses the latest Common Weakness Enumeration (CWE) list from MITRE.
 
 ## Quick Start
