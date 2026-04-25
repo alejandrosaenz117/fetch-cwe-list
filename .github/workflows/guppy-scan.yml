@@ -1,0 +1,31 @@
+name: Guppy Security Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  security-events: write
+
+jobs:
+  guppy-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Guppy Security Scanner
+        uses: alejandrosaenz117/guppy-agent@v1
+        with:
+          api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          llm_provider: anthropic
+          severity_threshold: high
+          enable_sca: true
+          post_comments: true
+          upload_sarif: true
+          sarif_filename: guppy-results.sarif
