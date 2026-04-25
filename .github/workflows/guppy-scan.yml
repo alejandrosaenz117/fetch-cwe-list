@@ -1,0 +1,30 @@
+name: Guppy Security Scan
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  guppy-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Run Guppy Security Scanner
+        uses: alejandrosaenz117/guppy-agent@286359e4631de168b09dab39effd9b706b3ef7df
+        with:
+          provider: anthropic
+          model: claude-sonnet-4-6
+          fail_on_severity: high
+          sca_enabled: true
+          post_comments: true
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
