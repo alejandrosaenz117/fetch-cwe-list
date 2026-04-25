@@ -20,7 +20,6 @@ jobs:
       - name: Run Guppy Security Scanner
         uses: alejandrosaenz117/guppy-agent@75c29f2c7bd1a56688c6a192ebebdb45eb3b4093
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           llm_provider: anthropic
           model: claude-sonnet-4-6
           severity_threshold: high
@@ -28,3 +27,4 @@ jobs:
           post_comments: true
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
