@@ -20,10 +20,10 @@ jobs:
       - name: Run Guppy Security Scanner
         uses: alejandrosaenz117/guppy-agent@1d4b5b6c4d121445ccc5a6dab52389084081cb2c
         with:
-          llm_provider: anthropic
+          provider: anthropic
           model: claude-sonnet-4-6
-          severity_threshold: high
-          enable_sca: true
+          fail_on_severity: high
+          sca_enabled: true
           post_comments: true
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
