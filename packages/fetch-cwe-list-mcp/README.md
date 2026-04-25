@@ -2,6 +2,8 @@
 
 > **Experimental:** This package is in alpha (v0.1.0-alpha.0). APIs may change.
 
+[![npm](https://img.shields.io/npm/v/fetch-cwe-list-mcp)](https://www.npmjs.com/package/fetch-cwe-list-mcp)
+
 MCP (Model Context Protocol) server that exposes the [fetch-cwe-list](https://github.com/alejandrosaenz117/fetch-cwe-list) library as tools for LLM agents like Claude.
 
 ## Installation
