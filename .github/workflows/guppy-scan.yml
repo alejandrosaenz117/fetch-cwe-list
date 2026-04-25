@@ -7,7 +7,6 @@ on:
 permissions:
   contents: read
   pull-requests: write
-  security-events: write
 
 jobs:
   guppy-scan:
@@ -19,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Guppy Security Scanner
-        uses: alejandrosaenz117/guppy-agent@v1
+        uses: alejandrosaenz117/guppy-agent@75c29f2c7bd1a56688c6a192ebebdb45eb3b4093
         with:
           api_key: ${{ secrets.LLM_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
