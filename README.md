@@ -185,6 +185,18 @@ Example entry:
 
 **Note:** Single references are automatically normalized to arrays and enriched just like multiple references. IDs are normalized to strings for consistency across all API surfaces.
 
+## MCP Server
+
+> **Experimental:** Alpha release. APIs may change.
+
+An [MCP server](https://www.npmjs.com/package/fetch-cwe-list-mcp) is available for using this library as tools in LLM agents like Claude Code, Codex, etc.:
+
+```bash
+npx fetch-cwe-list-mcp
+```
+
+See [packages/fetch-cwe-list-mcp](packages/fetch-cwe-list-mcp/README.md) for full setup and usage.
+
 ## License
 
 MIT
