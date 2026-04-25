@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Guppy Security Scanner
-        uses: alejandrosaenz117/guppy-agent@9d0b2d15e739ac327c6d175fd8fc26723332c1dc
+        uses: alejandrosaenz117/guppy-agent@1d4b5b6c4d121445ccc5a6dab52389084081cb2c
         with:
           llm_provider: anthropic
           model: claude-sonnet-4-6
