@@ -56,3 +56,4 @@ Thumbs.db
 # Claude Code session artifacts and planning documents
 /.claude/
 /docs/
+.aider*
