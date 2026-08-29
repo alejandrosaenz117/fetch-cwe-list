@@ -1,6 +1,6 @@
 {
   "name": "fetch-cwe-list-mcp",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "MCP (Model Context Protocol) server exposing fetch-cwe-list tools for LLM agents. Experimental/alpha — APIs may change.",
   "license": "MIT",
   "author": {
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
-    "fetch-cwe-list": "0.0.12",
+    "fetch-cwe-list": "0.1.2",
     "zod": "4.3.6"
   },
   "devDependencies": {
