@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.1.1...v0.1.2) (2026-08-29)
+
+
+### Features
+
+* **package.json:** add high-intent keywords ([469b67a](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/469b67aa34a3ce0f76033d5c607459bfb4370d6c))
+
+
+### Bug Fixes
+
+* **deps:** update dependencies to address security vulnerabilities ([d6b0b97](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/d6b0b9724be73d60cc7ff425f36af1a8efa60301))
+* pin actions/checkout to immutable commit SHA (CWE-494) ([6a432b7](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/6a432b7b5de9edd137520b2f6c89e0e758d0463b)), closes [#24](https://github.com/alejandrosaenz117/fetch-cwe-list/issues/24)
+
+
+### CI
+
+* add guppy-agent security scanning workflow ([8eca674](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/8eca674eb18247d53000bb2b2aec16f1dbfd7bb8))
+
+
+### Docs
+
+* add MCP server section to root README ([34b0b68](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/34b0b6832752e8b9ff9e1c3ceea3760ccd51f9a6))
+* add npm badge link to MCP package README ([6fd9c51](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/6fd9c51565669f06c63e911cc6871502b5ee06d0))
+* add npm badge to root README ([9696b8e](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/9696b8e8ef0f188ab79d5069a65ef8581dbe00a2))
+
+
+### Others
+
+* **.gitignore:** ignore aider artifacts ([417bcda](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/417bcda3d6b4b05b365d63b86be56e98376af290))
+* bump guppy-agent to v1.8.15 ([0b61072](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/0b61072d6a387206eebf8d3f0678b8887c3a3906))
+* bump guppy-agent to v1.8.17 ([7f88cc1](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/7f88cc1e4880575a98c27b016dd559a6193ebdb6))
+* clean up .gitignore ([9b17aba](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/9b17aba0f8d2f8f96c6dc0a23e967ed26f91d0e1))
+* remove tracked coverage artifacts from git ([117c225](https://github.com/alejandrosaenz117/fetch-cwe-list/commit/117c22595d7d0d5135948b6201beaa3e509b69e9))
+
 ### [0.1.1](https://github.com/alejandrosaenz117/fetch-cwe-list/compare/v0.1.0...v0.1.1) (2026-04-19)
 
 
