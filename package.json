@@ -60,6 +60,12 @@
     "owasp",
     "security",
     "cwe",
-    "common weakness enumeration"
+    "common weakness enumeration",
+    "mcp",
+    "mcp-server",
+    "ai-security",
+    "claude",
+    "cwe-parser",
+    "vulnerability-management"
   ]
 }
